@@ -1,20 +1,65 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ThemeContext } from "../../context/ThemeContext";
 import LottieAnimation from "../../shared/Animation/LottieAnimation";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
+import SocialLogin from "./SocialLogin/SocialLogin";
+import Swal from "sweetalert2";
+import useAuth from "../../hooks/useAuth";
 
 const Login = () => {
   const { isDarkMode } = useContext(ThemeContext);
-  const {
+  const [error, setError] = useState("");
+
+  let navigate = useNavigate();
+  let {loginUser}=useAuth();
+  let location = useLocation()
+  console.log(location)
+  let from = location.state?.from || '/'
+  let {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+  let onSubmit = (data) => {
+  setError(""); // reset old errors
 
-  const onSubmit = (data) => {
-    console.log("data from login", data);
-  };
+  loginUser(data.email, data.password)
+    .then(res => {
+      console.log(res.user);
+
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Logged in Successfully",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      navigate(from);
+    })
+    .catch(err => {
+      console.log(err);
+
+      // Show friendly error messages
+      if (err.code === "auth/user-not-found") {
+        setError("No account found with this email.");
+      } else if (err.code === "auth/wrong-password") {
+        setError("Incorrect password. Please try again.");
+      } else if (err.code === "auth/invalid-email") {
+        setError("Invalid email format.");
+      } else {
+        setError("Login failed. Please check your credentials.");
+      }
+
+      // Optional SweetAlert popup
+      Swal.fire({
+        icon: "error",
+        title: "Login Failed",
+        text: err.message,
+      });
+    });
+};
 
   return (
     <div
@@ -108,6 +153,7 @@ const Login = () => {
                 </small>
               </p>
             </form>
+            <SocialLogin></SocialLogin>
           </div>
         </div>
 

@@ -1,19 +1,70 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ThemeContext } from "../../context/ThemeContext";
 import LottieAnimation from "../../shared/Animation/LottieAnimation";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
+import useAuth from "../../hooks/useAuth";
+import SocialLogin from "./SocialLogin/SocialLogin";
+import Swal from "sweetalert2";
 
 const Register = () => {
   const { isDarkMode } = useContext(ThemeContext);
+  const [error, setError] = useState(""); // <-- error state
+  let navigate = useNavigate();
+  let location = useLocation();
+    let from = location.state?.from || "/";
+
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+  let { createUser, updateUserProfile } = useAuth();
 
   const onSubmit = (data) => {
     console.log("data from register", data);
+    createUser(data.email, data.password)
+      .then((result) => {
+        console.log("User created:", result.user);
+
+        // 🔥 MUST update displayName here
+        return updateUserProfile({
+          displayName: data.name,
+          photoURL: data.photo || "", // optional
+        });
+      })
+      .then(() => {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "User Created Successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        navigate(from);
+      })
+      .catch((err) => {
+        console.error(err);
+
+        // Show user-friendly error messages
+        if (err.code === "auth/email-already-in-use") {
+          setError("This email is already registered. Please login.");
+        } else if (err.code === "auth/weak-password") {
+          setError("Password is too weak. Try a stronger one.");
+        } else if (err.code === "auth/invalid-email") {
+          setError("Invalid email address.");
+        } else {
+          setError(err.message); // fallback
+        }
+
+        // Optional: SweetAlert2 popup
+        Swal.fire({
+          icon: "error",
+          title: "Registration Failed",
+          text: err.message,
+        });
+      });
   };
 
   return (
@@ -120,7 +171,7 @@ const Register = () => {
                     : "hover:bg-purple-200 bg-purple-100"
                 }`}
               >
-                Login
+                Register
               </button>
               <p>
                 <small>
@@ -133,6 +184,7 @@ const Register = () => {
                 </small>
               </p>
             </form>
+            <SocialLogin></SocialLogin>
           </div>
         </div>
 
