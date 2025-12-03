@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { AiFillHome, AiOutlineLogin } from "react-icons/ai";
-import { MdArticle, MdOutlineFeedback, MdMenuBook } from "react-icons/md";
+import { MdArticle, MdOutlineFeedback, MdMenuBook, MdBook } from "react-icons/md";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import NavLogo from "./NavLogo";
 import { motion } from "framer-motion";
@@ -13,7 +13,7 @@ import Swal from "sweetalert2";
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { isDarkMode } = useContext(ThemeContext);
-  
+
   const location = useLocation();
   let { logOut, user } = useAuth();
   let handleLogOut = () => {
@@ -32,16 +32,21 @@ const Navbar = () => {
         console.log(error);
       });
   };
-    const userImg = user?.photoURL
+  const userImg = user?.photoURL
     ? user.photoURL
-    : "https://i.ibb.co/Y0m7qF7/default-user.png";
+    : "https://i.ibb.co.com/sd6KVXdz/lawyer4.jpg";
 
   const links = [
     { name: "Home", to: "/", icon: <AiFillHome className="inline-block" /> },
     {
-      name: "Courses",
+      name: "Course Listing",
       to: "/courses",
       icon: <MdMenuBook className="inline-block" />,
+    },
+    {
+      name: "Add Course",
+      to: "/add-course",
+      icon: <MdBook className="inline-block" />,
     },
     {
       name: "Blog",
@@ -74,7 +79,7 @@ const Navbar = () => {
 
   const loginBtnTheme = isDarkMode
     ? "btn btn-outline bg-transparent text-white border-blue-500 hover:bg-blue-500 hover:text-white"
-    : "btn btn-outline bg-transparent text-purple-700 border-purple-500 hover:bg-purple-600 hover:text-white";
+    : "btn btn-outline bg-transparent text-white border-purple-500 hover:bg-purple-600 hover:text-white";
 
   return (
     <div
@@ -103,32 +108,32 @@ const Navbar = () => {
                   transition={{ duration: 0.4, delay: 0.1 * index }}
                 >
                   {/* 🔥 If user exists → show Logout button instead of Login */}
-                 {link.name === "Login" && user ? (
-  <div className="flex items-center gap-3">
-      
-      {/* 👤 User Image with Hover Name */}
-      <div className="relative group cursor-pointer">
-        <img
-          src={userImg}
-          alt="User"
-          className="w-9 h-9 rounded-full border-2 border-white object-cover"
-        />
+                  {link.name === "Login" && user ? (
+                    <div className="flex items-center gap-3">
+                      {/* 👤 User Image with Hover Name */}
+                      <div className="relative group cursor-pointer">
+                        <img
+                          src={userImg}
+                          alt="User"
+                          className="w-9 h-9 rounded-full border-2 border-white object-cover"
+                        />
 
-        {/* Hover Tooltip */}
-        <span className="absolute left-1/2 -translate-x-1/2 -bottom-9 
+                        {/* Hover Tooltip */}
+                        <span
+                          className="absolute left-1/2 -translate-x-1/2 -bottom-9 
             px-2 py-1 text-xs rounded bg-black text-white opacity-0 
-            group-hover:opacity-100 transition-all z-50 whitespace-nowrap">
-          {user?.displayName || "User"}
-        </span>
-      </div>
+            group-hover:opacity-100 transition-all z-50 whitespace-nowrap"
+                        >
+                          {user?.displayName || "User"}
+                        </span>
+                      </div>
 
-      {/* 🚪 Logout Button */}
-      <button onClick={handleLogOut} className={loginBtnTheme}>
-        Logout
-      </button>
-  </div>
-) : (
-
+                      {/* 🚪 Logout Button */}
+                      <button onClick={handleLogOut} className={loginBtnTheme}>
+                        Logout
+                      </button>
+                    </div>
+                  ) : (
                     <NavLink
                       to={link.to}
                       className={({ isActive }) => {
@@ -171,55 +176,54 @@ const Navbar = () => {
                 <HiOutlineMenuAlt3 size={20} />
               </div>
               <ul
-  tabIndex={0}
-  className="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-3 w-44 p-4 pr-6 shadow right-0 space-y-3"
->
+                tabIndex={0}
+                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-3 w-44 p-4 pr-6 shadow right-0 space-y-3"
+              >
+                {/* 🟣 MOBILE USER PROFILE SECTION */}
+                {user && (
+                  <div className="flex flex-col items-center gap-2 pb-2 border-b">
+                    <img
+                      src={userImg}
+                      alt="User"
+                      className="w-14 h-14 rounded-full border object-cover"
+                    />
+                    <p className="text-sm font-semibold">
+                      {user.displayName || "User"}
+                    </p>
+                  </div>
+                )}
 
-  {/* 🟣 MOBILE USER PROFILE SECTION */}
-  {user && (
-    <div className="flex flex-col items-center gap-2 pb-2 border-b">
-      <img
-        src={userImg}
-        alt="User"
-        className="w-14 h-14 rounded-full border object-cover"
-      />
-      <p className="text-sm font-semibold">{user.displayName || "User"}</p>
-    </div>
-  )}
-
-  {/* 🔥 MOBILE MENU LINKS */}
-  {links.map((link) => (
-    <li key={link.name}>
-      {link.name === "Login" && user ? (
-        <button
-          onClick={handleLogOut}
-          className={`px-3 py-1 rounded font-semibold transition-all duration-300 ${
-            isDarkMode
-              ? "text-red-400 hover:bg-blue-900/40"
-              : "text-red-600 hover:bg-purple-200/50"
-          }`}
-        >
-          Logout
-        </button>
-      ) : (
-        <NavLink
-          to={link.to}
-          className={({ isActive }) => {
-            return `px-3 py-1 rounded transition-all duration-300 ${
-              isDarkMode
-                ? "hover:bg-blue-900/40 text-gray-800"
-                : "hover:bg-purple-200/50 text-gray-800"
-            }`;
-          }}
-        >
-          {link.icon} {link.name}
-        </NavLink>
-      )}
-    </li>
-  ))}
-
-</ul>
-
+                {/* 🔥 MOBILE MENU LINKS */}
+                {links.map((link) => (
+                  <li key={link.name}>
+                    {link.name === "Login" && user ? (
+                      <button
+                        onClick={handleLogOut}
+                        className={`px-3 py-1 rounded font-semibold transition-all duration-300 ${
+                          isDarkMode
+                            ? "text-red-400 hover:bg-blue-900/40"
+                            : "text-red-600 hover:bg-purple-200/50"
+                        }`}
+                      >
+                        Logout
+                      </button>
+                    ) : (
+                      <NavLink
+                        to={link.to}
+                        className={({ isActive }) => {
+                          return `px-3 py-1 rounded transition-all duration-300 ${
+                            isDarkMode
+                              ? "hover:bg-blue-900/40 text-gray-800"
+                              : "hover:bg-purple-200/50 text-gray-800"
+                          }`;
+                        }}
+                      >
+                        {link.icon} {link.name}
+                      </NavLink>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>

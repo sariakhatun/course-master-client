@@ -48,7 +48,7 @@ const Banner = () => {
       title: "Learn Anytime, Anywhere",
       subtitle: "Access courses on any device and study at your own pace.",
       buttonText: "Join Now",
-      buttonLink: "/login",
+      buttonLink: "/logina",
     },
   ];
 

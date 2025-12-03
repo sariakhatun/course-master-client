@@ -1,0 +1,342 @@
+[
+  {
+    "_id": "course_001",
+    "title": "Complete MERN Stack Web Development",
+    "category": "Development",
+    "tags": ["mern", "web development", "full stack", "react", "node", "javascript", "frontend", "backend"],
+    "description": "A practical MERN Stack course where students learn React, Node.js, Express.js, MongoDB, authentication, and deployment.",
+    "thumbnail": "https://i.ibb.co.com/W49BnHVp/mern.jpg",
+    "instructor": {
+      "id": "instructor_12345",
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "bio": "Senior MERN Developer with 8+ years of experience.",
+      "profileImage": "https://i.ibb.co.com/sd6KVXdz/lawyer4.jpg",
+      "designation": "Full-Stack Developer",
+      "experience": "8 Years"
+    },
+    "syllabus": [
+      { "week": 1, "topic": "HTML, CSS, JS Basics", "details": ["HTML5", "CSS Grid", "JS Fundamentals"] },
+      { "week": 2, "topic": "React Basics", "details": ["Components", "Props", "Hooks"] },
+      { "week": 3, "topic": "Node & Express", "details": ["API", "Middleware", "Authentication"] }
+    ],
+    "price": 4999,
+    "duration": "3 Months",
+    "classSchedule": ["Saturday: 8 PM – 10 PM", "Monday: 8 PM – 10 PM", "Wednesday: 8 PM – 10 PM"],
+    "courseOutline": ["React Fundamentals", "Backend with Node.js", "MongoDB Database", "Authentication", "Deploying MERN"],
+    "batches": [
+      { "batchId": "batch_001_1", "name": "Batch 1", "startDate": "2026-01-01" },
+      { "batchId": "batch_001_2", "name": "Batch 2", "startDate": "2026-02-01" },
+      { "batchId": "batch_001_3", "name": "Batch 3", "startDate": "2026-03-01" }
+    ]
+  },
+  {
+    "_id": "course_002",
+    "title": "Backend Development with Node.js & Express",
+    "category": "Development",
+    "tags": ["backend", "node", "api", "express", "database", "rest api", "jwt", "server"],
+    "description": "Master backend development with Node.js, REST APIs, authentication, and database design.",
+    "thumbnail": "https://example.com/backend-thumb.jpg",
+    "instructor": {
+      "id": "instructor_22222",
+      "name": "Arman Hossain",
+      "email": "arman@example.com",
+      "bio": "Backend engineer focused on scalable architecture.",
+      "profileImage": "https://example.com/arman.jpg",
+      "designation": "Backend Developer",
+      "experience": "5 Years"
+    },
+    "syllabus": [
+      { "week": 1, "topic": "Node.js Basics", "details": ["Modules", "NPM", "Async"] },
+      { "week": 2, "topic": "Express.js", "details": ["Routing", "Middleware"] }
+    ],
+    "price": 3999,
+    "duration": "2 Months",
+    "classSchedule": ["Friday: 9 PM", "Sunday: 8 PM"],
+    "courseOutline": ["Node Basics", "Express", "JWT Auth", "MongoDB"],
+    "batches": [
+      { "batchId": "batch_002_1", "name": "Batch 1", "startDate": "2026-01-05" },
+      { "batchId": "batch_002_2", "name": "Batch 2", "startDate": "2026-02-05" }
+    ]
+  },
+  {
+    "_id": "course_003",
+    "title": "Ethical Hacking & CyberSecurity",
+    "category": "Security",
+    "tags": ["hacking", "cybersecurity", "security", "penetration testing", "linux", "kali", "network security"],
+    "description": "Learn penetration testing, Kali Linux, and ethical security practices.",
+    "thumbnail": "https://example.com/ethical.jpg",
+    "instructor": {
+      "id": "instructor_4455",
+      "name": "Mike Ross",
+      "email": "mike@example.com",
+      "bio": "Cyber Security Expert.",
+      "profileImage": "https://example.com/mike.jpg",
+      "designation": "Security Analyst",
+      "experience": "6 Years"
+    },
+    "syllabus": [
+      { "week": 1, "topic": "Networking", "details": ["TCP/IP", "Ports", "Protocols"] },
+      { "week": 2, "topic": "Kali Linux", "details": ["Tools", "Scanning"] }
+    ],
+    "price": 5999,
+    "duration": "2 Months",
+    "classSchedule": ["Friday: 8 PM", "Tuesday: 9 PM"],
+    "courseOutline": ["CyberSecurity Basics", "Linux Tools", "Pen Testing"],
+    "batches": [
+      { "batchId": "batch_003_1", "name": "Batch 1", "startDate": "2026-01-10" },
+      { "batchId": "batch_003_2", "name": "Batch 2", "startDate": "2026-02-10" }
+    ]
+  },
+  {
+    "_id": "course_004",
+    "title": "SSC Physics Crash Course",
+    "category": "SSC",
+    "tags": ["ssc", "physics", "board exam", "ssc crash course", "science"],
+    "description": "Special SSC crash course covering full Physics syllabus.",
+    "thumbnail": "https://example.com/ssc-physics.jpg",
+    "instructor": {
+      "id": "teacher_101",
+      "name": "Sir Anis",
+      "email": "anis@example.com",
+      "bio": "Renowned physics teacher.",
+      "profileImage": "https://example.com/anis.jpg",
+      "designation": "Physics Teacher",
+      "experience": "12 Years"
+    },
+    "syllabus": [
+      { "week": 1, "topic": "Motion", "details": ["Speed", "Velocity"] },
+      { "week": 2, "topic": "Force", "details": ["Newton Laws"] }
+    ],
+    "price": 1500,
+    "duration": "1 Month",
+    "classSchedule": ["Sun-Tue-Thu: 6 PM"],
+    "courseOutline": ["Chapter 1–10", "Model Tests"],
+    "batches": [
+      { "batchId": "batch_004_1", "name": "Batch 1", "startDate": "2026-01-03" },
+      { "batchId": "batch_004_2", "name": "Batch 2", "startDate": "2026-01-17" }
+    ]
+  },
+  {
+    "_id": "course_005",
+    "title": "SSC Higher Math Crash Course",
+    "category": "SSC",
+    "tags": ["ssc", "math", "board exam", "higher math", "ssc crash course"],
+    "description": "Complete Higher Math revision with problem solving.",
+    "thumbnail": "https://example.com/math.jpg",
+    "instructor": {
+      "id": "teacher_102",
+      "name": "Sir Tuhin",
+      "email": "tuhin@example.com",
+      "bio": "Math specialist.",
+      "profileImage": "https://example.com/tuhin.jpg",
+      "designation": "Math Teacher",
+      "experience": "10 Years"
+    },
+    "syllabus": [
+      { "week": 1, "topic": "Algebra", "details": ["Simultaneous", "Quadratic"] },
+      { "week": 2, "topic": "Geometry", "details": ["Triangle", "Circle"] }
+    ],
+    "price": 1200,
+    "duration": "1 Month",
+    "classSchedule": ["Mon-Wed-Fri: 6 PM"],
+    "courseOutline": ["Algebra", "Geometry", "Trigonometry"],
+    "batches": [
+      { "batchId": "batch_005_1", "name": "Batch 1", "startDate": "2026-01-04" },
+      { "batchId": "batch_005_2", "name": "Batch 2", "startDate": "2026-01-18" }
+    ]
+  },
+  {
+    "_id": "course_006",
+    "title": "HSC University Admission Preparation",
+    "category": "HSC",
+    "tags": ["hsc", "admission", "university", "math", "science", "hsc preparation"],
+    "description": "Admission-focused course for HSC graduates.",
+    "thumbnail": "https://example.com/admission.jpg",
+    "instructor": {
+      "id": "teacher_103",
+      "name": "Prof. Shams",
+      "email": "shams@example.com",
+      "bio": "Expert Admission Trainer.",
+      "profileImage": "https://example.com/shams.jpg",
+      "designation": "Admission Coach",
+      "experience": "15 Years"
+    },
+    "syllabus": [
+      { "week": 1, "topic": "Math", "details": ["Functions", "Limits"] },
+      { "week": 2, "topic": "Physics", "details": ["Motion", "Force"] }
+    ],
+    "price": 2200,
+    "duration": "2 Months",
+    "classSchedule": ["Sat-Mon-Wed: 7 PM"],
+    "courseOutline": ["Math", "Physics", "Chemistry", "English"],
+    "batches": [
+      { "batchId": "batch_006_1", "name": "Batch 1", "startDate": "2026-01-06" },
+      { "batchId": "batch_006_2", "name": "Batch 2", "startDate": "2026-02-06" }
+    ]
+  },
+  {
+    "_id": "course_007",
+    "title": "Complete Chemistry Course",
+    "category": "Science",
+    "tags": ["chemistry", "science", "hsc", "ssc", "organic", "inorganic"],
+    "description": "Complete chemistry course for HSC/SSC.",
+    "thumbnail": "https://example.com/chem.jpg",
+    "instructor": {
+      "id": "teacher_104",
+      "name": "Dr. Farhan",
+      "email": "farhan@example.com",
+      "bio": "Chemistry Lecturer.",
+      "profileImage": "https://example.com/farhan.jpg",
+      "designation": "Lecturer",
+      "experience": "9 Years"
+    },
+    "syllabus": [
+      { "week": 1, "topic": "Organic", "details": ["Hydrocarbon"] }
+    ],
+    "price": 1800,
+    "duration": "2 Months",
+    "classSchedule": ["Tue-Thu: 8 PM"],
+    "courseOutline": ["Organic", "Inorganic", "Physical"],
+    "batches": [
+      { "batchId": "batch_007_1", "name": "Batch 1", "startDate": "2026-01-07" },
+      { "batchId": "batch_007_2", "name": "Batch 2", "startDate": "2026-02-07" }
+    ]
+  },
+  {
+    "_id": "course_008",
+    "title": "Complete Biology Course",
+    "category": "Science",
+    "tags": ["biology", "science", "genetics", "ssc", "hsc"],
+    "description": "Biology course covering cell biology, genetics, evolution.",
+    "thumbnail": "https://example.com/bio.jpg",
+    "instructor": {
+      "id": "teacher_105",
+      "name": "Dr. Lima",
+      "email": "lima@example.com",
+      "bio": "Biology Specialist.",
+      "profileImage": "https://example.com/lima.jpg",
+      "designation": "Biology Expert",
+      "experience": "7 Years"
+    },
+    "syllabus": [
+      { "week": 1, "topic": "Cell Biology", "details": ["Cell Structure"] }
+    ],
+    "price": 1700,
+    "duration": "2 Months",
+    "classSchedule": ["Fri-Sun: 7 PM"],
+    "courseOutline": ["Cell", "Genetics", "Human Body"],
+    "batches": [
+      { "batchId": "batch_008_1", "name": "Batch 1", "startDate": "2026-01-08" },
+      { "batchId": "batch_008_2", "name": "Batch 2", "startDate": "2026-02-08" }
+    ]
+  },
+  {
+    "_id": "course_009",
+    "title": "HSC Higher Math Full Course",
+    "category": "HSC",
+    "tags": ["higher math", "hsc", "calculus", "functions", "hsc preparation"],
+    "description": "Complete higher math with problem solving.",
+    "thumbnail": "https://example.com/h-math.jpg",
+    "instructor": {
+      "id": "teacher_106",
+      "name": "Sir Nahid",
+      "email": "nahid@example.com",
+      "bio": "Top math trainer.",
+      "profileImage": "https://example.com/nahid.jpg",
+      "designation": "Math Instructor",
+      "experience": "11 Years"
+    },
+    "syllabus": [
+      { "week": 1, "topic": "Functions", "details": ["Domain", "Range"] }
+    ],
+    "price": 2000,
+    "duration": "3 Months",
+    "classSchedule": ["Mon-Thu: 7 PM"],
+    "courseOutline": ["Functions", "Calculus", "Matrix"],
+    "batches": [
+      { "batchId": "batch_009_1", "name": "Batch 1", "startDate": "2026-01-09" },
+      { "batchId": "batch_009_2", "name": "Batch 2", "startDate": "2026-02-09" }
+    ]
+  },
+  {
+    "_id": "course_010",
+    "title": "Quran Shikha – Basic",
+    "category": "Islamic",
+    "tags": ["quran", "islamic", "arabic", "tajweed", "basic quran"],
+    "description": "Learn Quran reading with proper pronunciation.",
+    "thumbnail": "https://example.com/quran-basic.jpg",
+    "instructor": {
+      "id": "imam_001",
+      "name": "Imam Abdullah",
+      "email": "abdullah@example.com",
+      "bio": "Quran & Tajweed teacher.",
+      "profileImage": "https://example.com/abdullah.jpg",
+      "designation": "Islamic Scholar",
+      "experience": "15 Years"
+    },
+    "syllabus": [
+      { "week": 1, "topic": "Arabic Alphabets", "details": ["Letters", "Sounds"] }
+    ],
+    "price": 999,
+    "duration": "1 Month",
+    "classSchedule": ["Fri-Sat: 6 PM"],
+    "courseOutline": ["Arabic Basics", "Tajweed", "Surah Recitation"],
+    "batches": [
+      { "batchId": "batch_010_1", "name": "Batch 1", "startDate": "2026-01-10" },
+      { "batchId": "batch_010_2", "name": "Batch 2", "startDate": "2026-02-10" }
+    ]
+  },
+  {
+    "_id": "course_011",
+    "title": "Quran Shikha – Advanced Tajweed",
+    "category": "Islamic",
+    "tags": ["quran", "tajweed", "islamic", "advanced recitation"],
+    "description": "Learn Tajweed with rules and advanced recitation.",
+    "thumbnail": "https://example.com/tajweed.jpg",
+    "instructor": {
+      "id": "imam_002",
+      "name": "Mufti Karim",
+      "email": "karim@example.com",
+      "bio": "Expert Tajweed trainer.",
+      "profileImage": "https://example.com/karim.jpg",
+      "designation": "Tajweed Instructor",
+      "experience": "17 Years"
+    },
+    "syllabus": [{ "week": 1, "topic": "Makharij", "details": ["Tongue Positions"] }],
+    "price": 1400,
+    "duration": "1.5 Months",
+    "classSchedule": ["Tue-Thu: 7 PM"],
+    "courseOutline": ["Makharij", "Rules", "Advanced Recitation"],
+    "batches": [
+      { "batchId": "batch_011_1", "name": "Batch 1", "startDate": "2026-01-11" },
+      { "batchId": "batch_011_2", "name": "Batch 2", "startDate": "2026-02-11" }
+    ]
+  },
+  {
+    "_id": "course_012",
+    "title": "English Spoken & Communication",
+    "category": "Language",
+    "tags": ["english", "spoken", "communication", "grammar", "speaking"],
+    "description": "Improve speaking, grammar, and communication skills.",
+    "thumbnail": "https://example.com/english.jpg",
+    "instructor": {
+      "id": "teacher_107",
+      "name": "Sarah Khan",
+      "email": "sarah@example.com",
+      "bio": "English instructor.",
+      "profileImage": "https://example.com/sarah.jpg",
+      "designation": "English Trainer",
+      "experience": "8 Years"
+    },
+    "syllabus": [{ "week": 1, "topic": "Grammar", "details": ["Tenses", "Voice"] }],
+    "price": 2100,
+    "duration": "2 Months",
+    "classSchedule": ["Sat-Tue: 8 PM"],
+    "courseOutline": ["Grammar", "Speaking", "Listening"],
+    "batches": [
+      { "batchId": "batch_012_1", "name": "Batch 1", "startDate": "2026-01-12" },
+      { "batchId": "batch_012_2", "name": "Batch 2", "startDate": "2026-02-12" }
+    ]
+  }
+]
