@@ -4,6 +4,7 @@ import AboutUs from './AboutUs';
 import OurServices from './OurServices';
 import StudentReviewSection from './StudentReviewSection ';
 import TopSellingCourses from './TopSellingCourses';
+import TopInstructors from './TopInstructors';
 
 const Home = () => {
     useEffect(() => {
@@ -15,6 +16,7 @@ const Home = () => {
             <AboutUs></AboutUs>
             <OurServices></OurServices>
             <TopSellingCourses></TopSellingCourses>
+            <TopInstructors></TopInstructors>
             <StudentReviewSection></StudentReviewSection>
             
         </div>

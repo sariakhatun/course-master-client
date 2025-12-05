@@ -1,8 +1,8 @@
 
 # 🚀 CourseMaster - Full-Featured EdTech Platform
 
-Client Side : https://course-master-server-drab.vercel.app/
-Server Side : https://coursemasterbysaria.netlify.app/
+Client Side : https://coursemasterbysaria.netlify.app/
+Server Side : https://course-master-server-drab.vercel.app/ 
 
 ## 📚 Project Overview
 **CourseMaster** is a production-ready online learning platform built using the **MERN stack**. This platform simulates a real-world EdTech environment where students, instructors, and administrators interact seamlessly.
@@ -46,6 +46,14 @@ Server Side : https://coursemasterbysaria.netlify.app/
 - Review submitted assignments  
 - Analytics dashboard for enrollments (bonus)
 - admin emails = admin@coursemaster.com  
+
+
+### UI Features
+- Fully responsive design for desktop, tablet, and mobile.
+- Light and dark mode toggle supported throughout the site.
+- Smooth hover effects and modern UI components using Tailwind CSS and ShadCN components.
+
+---
 
 ### 🌐 Public Pages (Unprotected)
 - Home / Course Listing with:  
