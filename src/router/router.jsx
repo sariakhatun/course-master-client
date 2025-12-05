@@ -10,6 +10,13 @@ import ErrorPage from "../components/ErrorPage";
 import CourseDetails from "../pages/Courses/CourseDetails";
 import PrivateRoute from "../Routes/PrivateRoute";
 import AddCourse from "../Dashboard/AdminDashboard/AddCourse";
+import Dashboard from "../Dashboard/Dashboard";
+import DashboardLayout from "../Dashboard/DashboardLayout";
+import MyCourses from "../Dashboard/StudentDashboard/MyCourses";
+import DashboardHome from "../Dashboard/DashboardHome";
+import Quiz from "../Dashboard/StudentDashboard/Quiz";
+import Assignment from "../Dashboard/StudentDashboard/Assignment";
+import CoursePlayer from "../Dashboard/StudentDashboard/CoursePlayer";
 
 export const router = createBrowserRouter([
   {
@@ -18,42 +25,93 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: Home,
+        element:<Home></Home>,
       },
       {
         path: "/courses",
-        Component: Courses,
+        element:<Courses></Courses>,
       },
       {
         path: "/courses/:id",
-        Component: CourseDetails,
+        element: <CourseDetails></CourseDetails>,
       },
       {
-        path: "/add-course",
+        path: "/courses/:id/player",
         element: <PrivateRoute>
-            <AddCourse></AddCourse>
-        </PrivateRoute>
+          <CoursePlayer></CoursePlayer>
+        </PrivateRoute>,
       },
 
       {
         path: "/blogs",
-        Component: Blogs,
+        element: <Blogs></Blogs>,
       },
       {
         path: "/feedback",
-        Component: FeedBack,
+        element: <FeedBack></FeedBack>,
       },
       {
         path: "/login",
-        Component: Login,
+        element:<Login></Login>,
       },
       {
         path: "/register",
-        Component: Register,
+       element: <Register></Register>,
+      },
+      {
+        path: "/dashboard",
+        element: (
+          <PrivateRoute>
+            <DashboardLayout></DashboardLayout>
+          </PrivateRoute>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <PrivateRoute>
+                <DashboardHome />
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "add-course",
+            element: (
+              <PrivateRoute>
+                <AddCourse></AddCourse>
+              </PrivateRoute>
+            ),
+          },
+
+          {
+            path: "my-courses",
+            element: (
+              <PrivateRoute>
+                <MyCourses />
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "assignment",
+            element: (
+              <PrivateRoute>
+                <Assignment></Assignment>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "quiz",
+            element: (
+              <PrivateRoute>
+                <Quiz></Quiz>
+              </PrivateRoute>
+            ),
+          },
+        ],
       },
       {
         path: "*",
-        Component: ErrorPage,
+        element: <ErrorPage></ErrorPage>,
       },
     ],
   },

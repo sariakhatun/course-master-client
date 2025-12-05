@@ -1,30 +1,40 @@
 import React from 'react';
 import useAuth from '../../../hooks/useAuth';
+import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import Swal from 'sweetalert2';
 
 const SocialLogin = () => {
-    let {singInWithGoogle}=useAuth();
-     const handleGoogleSignIn = () => {
-    singInWithGoogle()
-      .then((res) => {
-        console.log(res.user);
-      
-        Swal.fire({
-          icon: 'success',
-          title: 'Logged In Successful!',
-          text: `Welcome, ${res.user.displayName || 'User'}!`,
-          timer: 2000,
-          showConfirmButton: false,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Login Failed',
-          text: error.message,
-        });
+  let { singInWithGoogle } = useAuth();
+  const axiosSecure = useAxiosSecure();
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const res = await singInWithGoogle();
+      const user = res.user;
+      console.log(user);
+
+      // 🔹 Save to MongoDB
+      await axiosSecure.post("/api/users", {
+        name: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL || "",
       });
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Logged In Successful!',
+        text: `Welcome, ${user.displayName || 'User'}!`,
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: error.message,
+      });
+    }
   };
     return (
        <div>

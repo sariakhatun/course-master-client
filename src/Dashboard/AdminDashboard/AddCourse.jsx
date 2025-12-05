@@ -5,14 +5,16 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import useAuth from "../../hooks/useAuth";
 import Swal from "sweetalert2";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const AddCourse = () => {
   const { isDarkMode } = useContext(ThemeContext);
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
 
   useEffect(() => {
-          window.scrollTo(0, 0);
-        }, []);
+    window.scrollTo(0, 0);
+  }, []);
 
   const {
     register,
@@ -70,43 +72,56 @@ const AddCourse = () => {
     remove: removeBatch,
   } = useFieldArray({ control, name: "batches" });
 
- const onSubmit = (data) => {
-  try {
-    data.tags = data.tags.filter((tag) => tag.trim() !== "");
+  const onSubmit = (data) => {
+    try {
+      data.tags = data.tags.filter((tag) => tag.trim() !== "");
 
-    const courseData = {
-      ...data,
-      createdByName: user?.displayName || "Unknown User",
-      createdByEmail: user?.email || "No Email",
-      createdAt: new Date().toISOString(),
-      enrolledCount: 0,
-    };
+      const courseData = {
+        ...data,
+        price: Number(data.price),
+        syllabus: data.syllabus.map((s) => ({ ...s, week: Number(s.week) })),
+        createdByName: user?.displayName || "Unknown User",
+        createdByEmail: user?.email || "No Email",
+        createdAt: new Date().toISOString(),
+        enrolledCount: 0,
+      };
+      console.log("from on submit", courseData);
 
-    console.log("Final Saved Course:", courseData);
-
-    // 🎉 SUCCESS ALERT
-    Swal.fire({
-      title: "Course Added!",
-      text: "Your course has been created successfully.",
-      icon: "success",
-      confirmButtonText: "OK",
-      timer: 2000,
-    });
-
-  } catch (error) {
-    console.error("Error saving course:", error);
-
-    // ❌ ERROR ALERT
-    Swal.fire({
-      title: "Error!",
-      text: "Something went wrong. Try again.",
-      icon: "error",
-      confirmButtonText: "Close",
-    });
-  }
-};
-
-
+      axiosSecure
+        .post("/api/courses", courseData, {
+          headers: { "Content-Type": "application/json" },
+        })
+        .then((res) => {
+          console.log("from res inserted id", res.data);
+          if (res.data.courseId) {
+            Swal.fire({
+              title: "Course Added!",
+              text: "Your course has been created successfully.",
+              icon: "success",
+              confirmButtonText: "OK",
+              timer: 2000,
+            });
+          }
+        })
+        .catch((err) => {
+          console.error("Error posting course:", err);
+          Swal.fire({
+            title: "Error!",
+            text: "Something went wrong. Try again.",
+            icon: "error",
+            confirmButtonText: "Close",
+          });
+        });
+    } catch (error) {
+      console.error("Error saving course:", error);
+      Swal.fire({
+        title: "Error!",
+        text: "Something went wrong. Try again.",
+        icon: "error",
+        confirmButtonText: "Close",
+      });
+    }
+  };
 
   // THEME CLASSES
   const bg = isDarkMode ? " text-gray-200" : " text-gray-900";
@@ -124,8 +139,8 @@ const AddCourse = () => {
   const addBtn = isDarkMode ? "text-blue-400" : "text-purple-600";
 
   return (
-    <div className={`${bg} min-h-screen py-12 transition-colors duration-500`}>
-      <div className="max-w-6xl mt-24 mb-12 mx-auto p-6">
+    <div className={`${bg} min-h-screen  transition-colors duration-500`}>
+      <div className="max-w-6xl  mx-auto ">
         <SectionTitle title="Add New Course" />
 
         <form
@@ -211,19 +226,24 @@ const AddCourse = () => {
             ))}
           </div>
           <div className="flex items-center gap-4">
-             <button
-            type="button"
-            onClick={() => appendTag("")}
-            className={`${isDarkMode ? "text-white " : "text-black"} font-bold`}
-          >
-            Add Tag
-          </button>
+            <button
+              type="button"
+              onClick={() => appendTag("")}
+              className={`${
+                isDarkMode ? "text-white " : "text-black"
+              } font-bold`}
+            >
+              Add Tag
+            </button>
 
-             <button type="button" className="flex items-center gap-1 text-blue-500">
+            <button
+              type="button"
+              className="flex items-center gap-1 text-blue-500"
+            >
               <AiOutlineArrowLeft /> Click here
             </button>
           </div>
-         
+
           {/* Thumbnail */}
           <div>
             <label className="block font-semibold">Thumbnail URL:</label>
@@ -330,26 +350,28 @@ const AddCourse = () => {
             </div>
           ))}
           <div className="flex items-center gap-4">
-             <button
-            type="button"
-            onClick={() =>
-              appendSyllabus({
-                week: syllabusFields.length + 1,
-                topic: "",
-                details: [""],
-              })
-            }
-            className={`${isDarkMode ? "text-white" : "text-black"} font-bold`}
-          >
-            Add Week
-          </button>
-             <button type="button"  className="flex items-center gap-1 text-blue-500">
+            <button
+              type="button"
+              onClick={() =>
+                appendSyllabus({
+                  week: syllabusFields.length + 1,
+                  topic: "",
+                  details: [""],
+                })
+              }
+              className={`${
+                isDarkMode ? "text-white" : "text-black"
+              } font-bold`}
+            >
+              Add Week
+            </button>
+            <button
+              type="button"
+              className="flex items-center gap-1 text-blue-500"
+            >
               <AiOutlineArrowLeft /> Click here
             </button>
-          
-          
           </div>
-          
 
           {/* Class Schedule */}
           <SectionTitle title="Class Schedule" className={sectionTitleColor} />
@@ -372,18 +394,21 @@ const AddCourse = () => {
           </div>
           <div className="flex items-center gap-4">
             <button
-            type="button"
-            onClick={() => appendClass("")}
-            className={`${isDarkMode ? "text-white" : "text-black"} font-bold`}
-          >
-            Add Class Schedule
-          </button>
-           <button type="button"  className="flex items-center gap-1 text-blue-500">
+              type="button"
+              onClick={() => appendClass("")}
+              className={`${
+                isDarkMode ? "text-white" : "text-black"
+              } font-bold`}
+            >
+              Add Class Schedule
+            </button>
+            <button
+              type="button"
+              className="flex items-center gap-1 text-blue-500"
+            >
               <AiOutlineArrowLeft /> Click here
             </button>
-
           </div>
-          
 
           {/* Course Outline */}
           <SectionTitle title="Course Outline" className={sectionTitleColor} />
@@ -408,12 +433,17 @@ const AddCourse = () => {
             <button
               type="button"
               onClick={() => appendOutline("")}
-              className={`${isDarkMode ? "text-white" : "text-black"} font-bold`}
+              className={`${
+                isDarkMode ? "text-white" : "text-black"
+              } font-bold`}
             >
               Add Course Outline
             </button>
 
-            <button type="button"  className="flex items-center gap-1 text-blue-500">
+            <button
+              type="button"
+              className="flex items-center gap-1 text-blue-500"
+            >
               <AiOutlineArrowLeft /> Click here
             </button>
           </div>
@@ -458,26 +488,26 @@ const AddCourse = () => {
           ))}
           <div className="flex items-center gap-4">
             <button
-            type="button"
-            onClick={() =>
-              appendBatch({
-                batchId: `batch_${batchFields.length + 1}`,
-                name: "",
-                startDate: "",
-              })
-            }
-            className={`${isDarkMode ? "text-white" : "text-black"} font-bold
+              type="button"
+              onClick={() =>
+                appendBatch({
+                  batchId: `batch_${batchFields.length + 1}`,
+                  name: "",
+                  startDate: "",
+                })
+              }
+              className={`${isDarkMode ? "text-white" : "text-black"} font-bold
             `}
-          >
-            Add Batch
-
-          </button>
-             <button type="button"  className="flex items-center gap-1 text-blue-500">
+            >
+              Add Batch
+            </button>
+            <button
+              type="button"
+              className="flex items-center gap-1 text-blue-500"
+            >
               <AiOutlineArrowLeft /> Click here
             </button>
           </div>
-          
-          
 
           {/* Submit */}
           <div className="mt-4">

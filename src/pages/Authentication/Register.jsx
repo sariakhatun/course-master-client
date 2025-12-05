@@ -6,10 +6,12 @@ import { Link, useLocation, useNavigate } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import SocialLogin from "./SocialLogin/SocialLogin";
 import Swal from "sweetalert2";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const Register = () => {
   const { isDarkMode } = useContext(ThemeContext);
   const [error, setError] = useState(""); // <-- error state
+  let axiosSecure=useAxiosSecure()
   let navigate = useNavigate();
   let location = useLocation();
     let from = location.state?.from || "/";
@@ -22,50 +24,57 @@ const Register = () => {
   } = useForm();
   let { createUser, updateUserProfile } = useAuth();
 
-  const onSubmit = (data) => {
-    console.log("data from register", data);
-    createUser(data.email, data.password)
-      .then((result) => {
-        console.log("User created:", result.user);
+const onSubmit = async (data) => {
+  setError(""); // clear previous error
+  try {
+    // 1️⃣ Create Firebase user
+    const result = await createUser(data.email, data.password);
+    await updateUserProfile({
+      displayName: data.name,
+      photoURL: data.photo || "",
+    });
 
-        // 🔥 MUST update displayName here
-        return updateUserProfile({
-          displayName: data.name,
-          photoURL: data.photo || "", // optional
-        });
-      })
-      .then(() => {
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "User Created Successfully",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        navigate(from);
-      })
-      .catch((err) => {
-        console.error(err);
+    // 2️⃣ Save user to MongoDB
+    console.log("Posting to MongoDB:", { name: data.name, email: data.email });
 
-        // Show user-friendly error messages
-        if (err.code === "auth/email-already-in-use") {
-          setError("This email is already registered. Please login.");
-        } else if (err.code === "auth/weak-password") {
-          setError("Password is too weak. Try a stronger one.");
-        } else if (err.code === "auth/invalid-email") {
-          setError("Invalid email address.");
-        } else {
-          setError(err.message); // fallback
-        }
+    await axiosSecure.post("/api/users", {
+      name: data.name,
+      email: data.email,
+      photoURL: data.photo || "",
+    });
 
-        // Optional: SweetAlert2 popup
-        Swal.fire({
-          icon: "error",
-          title: "Registration Failed",
-          text: err.message,
-        });
-      });
-  };
+    // 3️⃣ Success alert
+    Swal.fire({
+      position: "top-end",
+      icon: "success",
+      title: "User Created Successfully",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+
+    navigate(from);
+  } catch (err) {
+    console.error(err);
+
+    // Friendly error messages
+    if (err.code === "auth/email-already-in-use") {
+      setError("This email is already registered. Please login.");
+    } else if (err.code === "auth/weak-password") {
+      setError("Password is too weak. Try a stronger one.");
+    } else if (err.code === "auth/invalid-email") {
+      setError("Invalid email address.");
+    } else {
+      setError(err.message); // fallback
+    }
+
+    Swal.fire({
+      icon: "error",
+      title: "Registration Failed",
+      text: err.message,
+    });
+  }
+};
+
 
   return (
     <div

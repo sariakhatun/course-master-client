@@ -1,7 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { AiFillHome, AiOutlineLogin } from "react-icons/ai";
-import { MdArticle, MdOutlineFeedback, MdMenuBook, MdBook } from "react-icons/md";
+import {
+  MdArticle,
+  MdOutlineFeedback,
+  MdMenuBook,
+  MdBook,
+} from "react-icons/md";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import NavLogo from "./NavLogo";
 import { motion } from "framer-motion";
@@ -12,14 +17,18 @@ import Swal from "sweetalert2";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const { isDarkMode } = useContext(ThemeContext);
+  const [profileOpen, setProfileOpen] = useState(false); // ⭐ Desktop profile dropdown
+  const [mobileOpen, setMobileOpen] = useState(false);
 
+
+  const { isDarkMode } = useContext(ThemeContext);
   const location = useLocation();
   let { logOut, user } = useAuth();
+  
+
   let handleLogOut = () => {
     logOut()
       .then(() => {
-        console.log("user logged out");
         Swal.fire({
           position: "top-end",
           icon: "success",
@@ -28,10 +37,9 @@ const Navbar = () => {
           timer: 1500,
         });
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => console.log(error));
   };
+
   const userImg = user?.photoURL
     ? user.photoURL
     : "https://i.ibb.co.com/sd6KVXdz/lawyer4.jpg";
@@ -43,11 +51,7 @@ const Navbar = () => {
       to: "/courses",
       icon: <MdMenuBook className="inline-block" />,
     },
-    {
-      name: "Add Course",
-      to: "/add-course",
-      icon: <MdBook className="inline-block" />,
-    },
+    
     {
       name: "Blog",
       to: "/blogs",
@@ -71,8 +75,13 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+    // Auto close mobile menu & profile dropdown when route changes
+  useEffect(() => {
+    setMobileOpen(false);
+    setProfileOpen(false);
+  }, [location.pathname]);
 
-  // Force background on all pages except Home
+  // Force background on all pages except Home & courses
   const forceBg = location.pathname !== "/" && location.pathname !== "/courses";
 
   const scrolledBg = isDarkMode ? "bg-blue-300 " : "bg-purple-300 ";
@@ -88,6 +97,7 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 xl:px-0 flex items-center justify-between h-16">
+        {/* LOGO */}
         <motion.div
           initial={{ opacity: 0, x: -60 }}
           animate={{ opacity: 1, x: 0 }}
@@ -98,6 +108,7 @@ const Navbar = () => {
         </motion.div>
 
         <div className="flex items-center gap-2 lg:gap-3">
+          {/* DESKTOP MENU */}
           <div className="hidden lg:flex items-center gap-2">
             <ul className="menu menu-horizontal font-semibold px-2 space-x-2">
               {links.map((link, index) => (
@@ -107,32 +118,8 @@ const Navbar = () => {
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.4, delay: 0.1 * index }}
                 >
-                  {/* 🔥 If user exists → show Logout button instead of Login */}
                   {link.name === "Login" && user ? (
-                    <div className="flex items-center gap-3">
-                      {/* 👤 User Image with Hover Name */}
-                      <div className="relative group cursor-pointer">
-                        <img
-                          src={userImg}
-                          alt="User"
-                          className="w-9 h-9 rounded-full border-2 border-white object-cover"
-                        />
-
-                        {/* Hover Tooltip */}
-                        <span
-                          className="absolute left-1/2 -translate-x-1/2 -bottom-9 
-            px-2 py-1 text-xs rounded bg-black text-white opacity-0 
-            group-hover:opacity-100 transition-all z-50 whitespace-nowrap"
-                        >
-                          {user?.displayName || "User"}
-                        </span>
-                      </div>
-
-                      {/* 🚪 Logout Button */}
-                      <button onClick={handleLogOut} className={loginBtnTheme}>
-                        Logout
-                      </button>
-                    </div>
+                    <></> // Login button hidden when user logged in (we handle logout in profile dropdown)
                   ) : (
                     <NavLink
                       to={link.to}
@@ -146,11 +133,7 @@ const Navbar = () => {
                           : "text-white hover:bg-purple-200/50";
 
                         return `px-3 py-2.5 rounded text-white transition-all duration-300 ${
-                          link.name === "Login"
-                            ? loginBtnTheme
-                            : isActive
-                            ? activeBg
-                            : defaultLink
+                          isActive ? activeBg : defaultLink
                         }`;
                       }}
                     >
@@ -162,68 +145,119 @@ const Navbar = () => {
             </ul>
 
             <ThemeToggle />
-          </div>
 
-          {/* Mobile Menu */}
+            {/* ⭐ Desktop Profile Dropdown */}
+            {user && (
+              <div className="relative">
+                <img
+                  src={userImg}
+                  alt="User"
+                  className="w-9 h-9 rounded-full cursor-pointer border"
+                  onClick={() => setProfileOpen(!profileOpen)}
+                />
+
+                {profileOpen && (
+                  <div className="absolute right-0 mt-3 bg-white rounded shadow-lg w-40 z-50 p-2 space-y-1">
+                    <NavLink
+                      to="/dashboard"
+                      className="block px-3 py-2 rounded hover:bg-purple-100"
+                    >
+                      Dashboard
+                    </NavLink>
+
+                    <button
+                      onClick={handleLogOut}
+                      className="block w-full text-left px-3 py-2 text-red-500 rounded hover:bg-red-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          {/* MOBILE MENU */}
           <div className="flex lg:hidden items-center gap-2">
             <ThemeToggle />
-            <div className="dropdown">
-              <div
-                tabIndex={0}
-                role="button"
+
+            {/* Custom Mobile Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setMobileOpen(!mobileOpen)}
                 className="btn text-white bg-transparent border-0 btn-sm shadow-none"
               >
                 <HiOutlineMenuAlt3 size={20} />
-              </div>
-              <ul
-                tabIndex={0}
-                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-3 w-44 p-4 pr-6 shadow right-0 space-y-3"
-              >
-                {/* 🟣 MOBILE USER PROFILE SECTION */}
-                {user && (
-                  <div className="flex flex-col items-center gap-2 pb-2 border-b">
-                    <img
-                      src={userImg}
-                      alt="User"
-                      className="w-14 h-14 rounded-full border object-cover"
-                    />
-                    <p className="text-sm font-semibold">
-                      {user.displayName || "User"}
-                    </p>
-                  </div>
-                )}
+              </button>
 
-                {/* 🔥 MOBILE MENU LINKS */}
-                {links.map((link) => (
-                  <li key={link.name}>
-                    {link.name === "Login" && user ? (
+              {/* Menu Panel */}
+              {mobileOpen && (
+                <ul
+                  className={`absolute right-0 mt-3 menu menu-sm bg-base-100 rounded-box z-50 w-44 p-4 pr-6 shadow space-y-3`}
+                >
+                  {/* MOBILE USER PROFILE */}
+                  {user && (
+                    <div className="flex flex-col items-center gap-2 pb-2 border-b">
+                      <img
+                        src={userImg}
+                        alt="User"
+                        className="w-14 h-14 rounded-full border object-cover"
+                      />
+                      <p className="text-sm font-semibold">
+                        {user.displayName || "User"}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* NORMAL LINKS */}
+                  {links.map((link) =>
+                    link.name === "Login" && user ? null : (
+                      <li key={link.name}>
+                        <NavLink
+                          to={link.to}
+                          onClick={() => setMobileOpen(false)} // ⭐ Auto close
+                          className={({ isActive }) =>
+                            `px-3 py-1 rounded transition-all duration-300 ${
+                              isDarkMode
+                                ? "hover:bg-blue-900/40 text-gray-800"
+                                : "hover:bg-purple-200/50 text-gray-800"
+                            }`
+                          }
+                        >
+                          {link.icon} {link.name}
+                        </NavLink>
+                      </li>
+                    )
+                  )}
+
+                  {/* ⭐ DASHBOARD in Mobile */}
+                  {user && (
+                    <li>
+                      <NavLink
+                        to="/dashboard"
+                        onClick={() => setMobileOpen(false)} // ⭐ Auto close
+                        className="px-3 py-1 rounded font-semibold hover:bg-purple-200/50"
+                      >
+                        📊 Dashboard
+                      </NavLink>
+                    </li>
+                  )}
+
+                  {/* ⭐ LOGOUT in Mobile */}
+                  {user && (
+                    <li>
                       <button
-                        onClick={handleLogOut}
-                        className={`px-3 py-1 rounded font-semibold transition-all duration-300 ${
-                          isDarkMode
-                            ? "text-red-400 hover:bg-blue-900/40"
-                            : "text-red-600 hover:bg-purple-200/50"
-                        }`}
+                        onClick={() => {
+                          handleLogOut();
+                          setMobileOpen(false); // ⭐ Auto close after logout
+                        }}
+                        className="px-3 py-1 rounded font-semibold text-red-500 hover:bg-red-100"
                       >
                         Logout
                       </button>
-                    ) : (
-                      <NavLink
-                        to={link.to}
-                        className={({ isActive }) => {
-                          return `px-3 py-1 rounded transition-all duration-300 ${
-                            isDarkMode
-                              ? "hover:bg-blue-900/40 text-gray-800"
-                              : "hover:bg-purple-200/50 text-gray-800"
-                          }`;
-                        }}
-                      >
-                        {link.icon} {link.name}
-                      </NavLink>
-                    )}
-                  </li>
-                ))}
-              </ul>
+                    </li>
+                  )}
+                </ul>
+              )}
             </div>
           </div>
         </div>
