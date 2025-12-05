@@ -1,113 +1,213 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "axios";
+// src/pages/CoursePlayer.jsx
+import React, { useState, useEffect, useContext } from "react";
+import { useParams, Link } from "react-router-dom";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import useAuth from "../../hooks/useAuth";
+import Swal from "sweetalert2";
+import { ThemeContext } from "../../context/ThemeContext";
 
 const CoursePlayer = () => {
-  const { id } = useParams(); // matches /courses/:id/player
-  const [course, setCourse] = useState(null);
-  const [progress, setProgress] = useState(0);
-  const [currentLesson, setCurrentLesson] = useState(0); // track lesson index
-  const [completedLessons, setCompletedLessons] = useState([]);
+  const { courseId } = useParams();
+  const axiosSecure = useAxiosSecure();
+  const { user } = useAuth();
+  const { isDarkMode } = useContext(ThemeContext);
 
-  const email = localStorage.getItem("email"); // logged-in user's email
+  const [course, setCourse] = useState(null);
+  const [enrollment, setEnrollment] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const demoVideos = [
+    "https://www.youtube.com/embed/pQN-pnXPaVg", // HTML Crash Course for Beginners
+    "https://www.youtube.com/embed/yfoY53QXEnI", // CSS Crash Course for Beginners
+    "https://www.youtube.com/embed/hdI2bqOjy3c", // JavaScript Crash Course for Beginners
+  ];
 
   useEffect(() => {
-    // Fetch course details
-    axios
-      .get(`http://localhost:5000/api/courses/${id}`)
-      .then((res) => setCourse(res.data))
-      .catch((err) => console.log(err));
+    const fetchData = async () => {
+      try {
+        const courseRes = await axiosSecure.get(`/api/courses/${courseId}`);
+        const enrollRes = await axiosSecure.get(`/api/enroll/${user.email}`);
 
-    // Fetch user's progress
-    axios
-      .get(`http://localhost:5000/api/enroll/progress/${id}`, {
-        params: { email },
-      })
-      .then((res) => {
-        setProgress(res.data.progress || 0);
-        setCompletedLessons(res.data.completedLessons || []);
-      })
-      .catch((err) => console.log(err));
-  }, [id]);
+        const myEnrollment = enrollRes.data.data.find(
+          (e) => e.courseId === courseId
+        );
 
-  const handleMarkCompleted = async () => {
-    try {
-      const lessonId = course.lessons[currentLesson]._id;
-
-      const res = await axios.patch(
-        `http://localhost:5000/api/enroll/complete-lesson`,
-        {
-          courseId: id,
-          email,
-          lessonId,
-        }
-      );
-
-      setProgress(res.data.progress);
-      setCompletedLessons(res.data.completedLessons);
-
-      alert("Lesson marked as completed!");
-
-      // auto move to next lesson if exists
-      if (currentLesson < course.lessons.length - 1) {
-        setCurrentLesson(currentLesson + 1);
+        setCourse(courseRes.data.data);
+        setEnrollment(myEnrollment);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setLoading(false);
       }
+    };
+    fetchData();
+  }, [courseId, axiosSecure, user.email]);
+
+  const handleMarkComplete = async (videoIndex) => {
+    if (!enrollment) return;
+
+    const newProgress = Math.min(100, enrollment.progress + 5);
+    const updatedCompleted = [
+      ...(enrollment.completedLessons || []),
+      videoIndex,
+    ];
+
+    try {
+      await axiosSecure.patch(`/api/enroll/${enrollment._id}`, {
+        progress: newProgress,
+        completedLessons: updatedCompleted,
+      });
+
+      setEnrollment({
+        ...enrollment,
+        progress: newProgress,
+        completedLessons: updatedCompleted,
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Great Job!",
+        text: `Lesson ${videoIndex + 1} completed! Progress: ${newProgress}%`,
+        timer: 2000,
+        showConfirmButton: false,
+      });
     } catch (err) {
-      console.log(err);
+      Swal.fire("Error", "Failed to update progress", "error");
     }
   };
 
-  if (!course) return <p className="text-center mt-10">Loading course...</p>;
+  const isCompleted = (index) => enrollment?.completedLessons?.includes(index);
 
-  const lesson = course.lessons[currentLesson];
+  if (loading) {
+    return <div className="text-center py-20">Loading course...</div>;
+  }
+
+  if (!course || !enrollment) {
+    return (
+      <div className="text-center py-20">
+        Course not found or you are not enrolled!
+      </div>
+    );
+  }
 
   return (
-    <div className="w-[80%] mx-auto py-6">
-      <h1 className="text-2xl font-bold mb-4">{course.title}</h1>
-
-      {/* Progress Bar */}
-      <div className="w-full bg-gray-200 rounded h-4 mb-4">
+    <div
+      className={`min-h-screen mt-24 py-10 transition-colors duration-300 ${
+        isDarkMode ? " text-gray-200" : " text-gray-900"
+      }`}
+    >
+      <div className="max-w-6xl mx-auto px-4">
+        {/* Header */}
         <div
-          className="bg-blue-600 h-4 rounded"
-          style={{ width: `${progress}%` }}
-        ></div>
-      </div>
-      <p className="mb-4 font-semibold">{progress}% Completed</p>
-
-      {/* Current Lesson Video */}
-      <h2 className="text-xl font-semibold mb-2">{lesson.title}</h2>
-      <iframe
-        width="100%"
-        height="450"
-        src={lesson.videoUrl.replace("watch?v=", "embed/")}
-        frameBorder="0"
-        allowFullScreen
-      ></iframe>
-
-      {/* Mark Completed Button */}
-      <div className="flex justify-between items-center mt-5">
-        <button
-          onClick={handleMarkCompleted}
-          disabled={completedLessons.includes(lesson._id)}
-          className={`px-4 py-2 rounded text-white ${
-            completedLessons.includes(lesson._id)
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
+          className={`rounded-2xl shadow-xl p-8 mb-8 transition-colors duration-300 ${
+            isDarkMode ? "bg-gray-800" : "bg-white"
           }`}
         >
-          {completedLessons.includes(lesson._id)
-            ? "Completed"
-            : "Mark as Completed"}
-        </button>
-
-        {currentLesson < course.lessons.length - 1 && (
-          <button
-            onClick={() => setCurrentLesson(currentLesson + 1)}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+          <h1
+            className={`text-3xl font-bold transition-colors duration-300 ${
+              isDarkMode ? "text-purple-400" : "text-purple-700"
+            }`}
           >
-            Next Lesson
-          </button>
-        )}
+            {course.title}
+          </h1>
+          <div className="flex flex-wrap gap-6 mt-4 text-sm">
+            <p>
+              Instructor: <strong>{course.instructor.name}</strong>
+            </p>
+            <p>
+              Duration: <strong>{course.duration}</strong>
+            </p>
+            <p className="text-green-600 font-bold">
+              Progress: {enrollment.progress}%
+            </p>
+          </div>
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mt-4">
+            <div
+              className="bg-gradient-to-r from-purple-600 to-pink-600 h-4 rounded-full transition-all duration-500"
+              style={{ width: `${enrollment.progress}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Video Lessons */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {course.syllabus.slice(0, 3).map((week, index) => (
+            <div
+              key={week._id}
+              className={`rounded-2xl shadow-lg overflow-hidden transition-colors duration-300 ${
+                isDarkMode
+                  ? "bg-gray-800 hover:bg-gray-700"
+                  : "bg-white hover:bg-gray-100"
+              }`}
+            >
+              <div className="aspect-video bg-black">
+                <iframe
+                  src={demoVideos[index]}
+                  title={`Lesson ${index + 1}`}
+                  className="w-full h-full"
+                  allowFullScreen
+                ></iframe>
+              </div>
+
+              <div className="p-6">
+                <h3
+                  className={`text-xl font-bold transition-colors duration-300 ${
+                    isDarkMode ? "text-purple-400" : "text-purple-700"
+                  }`}
+                >
+                  Week {week.week}: {week.topic}
+                </h3>
+                <ul
+                  className={`mt-3 text-sm list-disc pl-5 space-y-1 transition-colors duration-300 ${
+                    isDarkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  {week.details.map((d, i) => (
+                    <li key={i}>{d}</li>
+                  ))}
+                </ul>
+
+                <button
+                  onClick={() => handleMarkComplete(index)}
+                  disabled={isCompleted(index)}
+                  className={`mt-6 w-full py-3 rounded-lg font-bold transition-all duration-300 ${
+                    isCompleted(index)
+                      ? "bg-green-500 text-white cursor-not-allowed"
+                      : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-lg"
+                  }`}
+                >
+                  {isCompleted(index) ? "Completed" : "Mark as Complete (+5%)"}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Back Button */}
+        {/* More videos info */}
+        <div className="text-center mt-6">
+          <p
+            className={`text-sm italic ${
+              isDarkMode ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
+            More videos will be uploaded soon...
+          </p>
+        </div>
+
+        {/* Back Button */}
+        <div className="text-center mt-4">
+          <Link
+            to="/dashboard/my-courses"
+            className={`inline-block px-8 py-3 rounded-lg font-semibold transition-colors duration-300 ${
+              isDarkMode
+                ? "bg-gray-700 text-gray-200 hover:bg-gray-600"
+                : "bg-gray-600 text-white hover:bg-gray-700"
+            }`}
+          >
+            Back to My Courses
+          </Link>
+        </div>
       </div>
     </div>
   );

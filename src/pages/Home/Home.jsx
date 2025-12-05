@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import Banner from './Banner';
 import AboutUs from './AboutUs';
 import OurServices from './OurServices';
+import StudentReviewSection from './StudentReviewSection ';
+import TopSellingCourses from './TopSellingCourses';
 
 const Home = () => {
     useEffect(() => {
@@ -12,6 +14,9 @@ const Home = () => {
             <Banner></Banner>
             <AboutUs></AboutUs>
             <OurServices></OurServices>
+            <TopSellingCourses></TopSellingCourses>
+            <StudentReviewSection></StudentReviewSection>
+            
         </div>
     );
 };

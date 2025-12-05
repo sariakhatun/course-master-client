@@ -11,11 +11,10 @@ import useAxiosSecure from "../../hooks/useAxiosSecure";
 const Register = () => {
   const { isDarkMode } = useContext(ThemeContext);
   const [error, setError] = useState(""); // <-- error state
-  let axiosSecure=useAxiosSecure()
+  let axiosSecure = useAxiosSecure();
   let navigate = useNavigate();
   let location = useLocation();
-    let from = location.state?.from || "/";
-
+  let from = location.state?.from || "/";
 
   const {
     register,
@@ -24,57 +23,62 @@ const Register = () => {
   } = useForm();
   let { createUser, updateUserProfile } = useAuth();
 
-const onSubmit = async (data) => {
-  setError(""); // clear previous error
-  try {
-    // 1️⃣ Create Firebase user
-    const result = await createUser(data.email, data.password);
-    await updateUserProfile({
-      displayName: data.name,
-      photoURL: data.photo || "",
-    });
+  const onSubmit = async (data) => {
+    setError(""); // clear previous error
+    try {
+      // 1️⃣ Create Firebase user
+      const result = await createUser(data.email, data.password);
+      await updateUserProfile({
+        displayName: data.name,
+        photoURL: data.photo || "",
+          password: data.password, // ✅ include password
 
-    // 2️⃣ Save user to MongoDB
-    console.log("Posting to MongoDB:", { name: data.name, email: data.email });
+      });
 
-    await axiosSecure.post("/api/users", {
-      name: data.name,
-      email: data.email,
-      photoURL: data.photo || "",
-    });
+      // 2️⃣ Save user to MongoDB
+      console.log("Posting to MongoDB:", {
+        name: data.name,
+        email: data.email,
+      });
 
-    // 3️⃣ Success alert
-    Swal.fire({
-      position: "top-end",
-      icon: "success",
-      title: "User Created Successfully",
-      showConfirmButton: false,
-      timer: 1500,
-    });
+      await axiosSecure.post("/api/users", {
+        name: data.name,
+        email: data.email,
+        photoURL: data.photo || "",
+        role: "student", // <-- add default role
+      });
 
-    navigate(from);
-  } catch (err) {
-    console.error(err);
+      // 3️⃣ Success alert
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "User Created Successfully",
+        showConfirmButton: false,
+        timer: 1500,
+      });
 
-    // Friendly error messages
-    if (err.code === "auth/email-already-in-use") {
-      setError("This email is already registered. Please login.");
-    } else if (err.code === "auth/weak-password") {
-      setError("Password is too weak. Try a stronger one.");
-    } else if (err.code === "auth/invalid-email") {
-      setError("Invalid email address.");
-    } else {
-      setError(err.message); // fallback
+      navigate(from);
+    } catch (err) {
+      console.error(err);
+
+      // Friendly error messages
+      if (err.code === "auth/email-already-in-use") {
+        setError("This email is already registered. Please login.");
+      } else if (err.code === "auth/weak-password") {
+        setError("Password is too weak. Try a stronger one.");
+      } else if (err.code === "auth/invalid-email") {
+        setError("Invalid email address.");
+      } else {
+        setError(err.message); // fallback
+      }
+
+      Swal.fire({
+        icon: "error",
+        title: "Registration Failed",
+        text: err.message,
+      });
     }
-
-    Swal.fire({
-      icon: "error",
-      title: "Registration Failed",
-      text: err.message,
-    });
-  }
-};
-
+  };
 
   return (
     <div
@@ -110,6 +114,19 @@ const onSubmit = async (data) => {
                   <p className="text-red-600">Name is required</p>
                 )}
               </div>
+              {/* Photo URL */}
+              <div>
+                <label className="label">Photo URL</label>
+                <input
+                  type="text"
+                  {...register("photo")} // optional field
+                  className={`input w-full ${
+                    isDarkMode ? "bg-indigo-950 text-white" : "bg-purple-50"
+                  }`}
+                  placeholder="Enter your photo URL (optional)"
+                />
+              </div>
+
               {/* photo */}
               {/* <div>
                 <label className="label">Photo</label>

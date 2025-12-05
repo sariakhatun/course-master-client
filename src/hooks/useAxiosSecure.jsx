@@ -4,7 +4,7 @@ import React from 'react';
 // import { useNavigate } from 'react-router';
 
 let axiosSecure = axios.create({
-    baseURL:`http://localhost:5000`
+    baseURL:`https://course-master-server-drab.vercel.app`
 })
 const useAxiosSecure = () => {
   return axiosSecure;

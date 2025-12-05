@@ -17,6 +17,12 @@ import DashboardHome from "../Dashboard/DashboardHome";
 import Quiz from "../Dashboard/StudentDashboard/Quiz";
 import Assignment from "../Dashboard/StudentDashboard/Assignment";
 import CoursePlayer from "../Dashboard/StudentDashboard/CoursePlayer";
+import AllEnrolledStudents from "../Dashboard/AdminDashboard/AllEnrolledStudents";
+import AllAssignment from "../Dashboard/AdminDashboard/AllAssignment";
+import AllCoursesTable from "../Dashboard/AdminDashboard/AllCoursesTable";
+import UpdateCourse from "../Dashboard/AdminDashboard/UpdateCourse";
+import StartLearning from "../Dashboard/StudentDashboard/StartLearning";
+import AdminRoute from "./AdminRoute";
 
 export const router = createBrowserRouter([
   {
@@ -35,8 +41,14 @@ export const router = createBrowserRouter([
         path: "/courses/:id",
         element: <CourseDetails></CourseDetails>,
       },
+      // {
+      //   path: "/courses/:id/player",
+      //   element: <PrivateRoute>
+      //     <StartLearning></StartLearning>
+      //   </PrivateRoute>,
+      // },
       {
-        path: "/courses/:id/player",
+        path: "/courses/:courseId/player",
         element: <PrivateRoute>
           <CoursePlayer></CoursePlayer>
         </PrivateRoute>,
@@ -70,7 +82,7 @@ export const router = createBrowserRouter([
             index: true,
             element: (
               <PrivateRoute>
-                <DashboardHome />
+                <Dashboard></Dashboard>
               </PrivateRoute>
             ),
           },
@@ -79,6 +91,38 @@ export const router = createBrowserRouter([
             element: (
               <PrivateRoute>
                 <AddCourse></AddCourse>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "courses/update/:courseId",
+            element: (
+              <PrivateRoute>
+                <UpdateCourse></UpdateCourse>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "all-courses",
+            element: (
+              <PrivateRoute>
+                <AllCoursesTable></AllCoursesTable>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "enrollment",
+            element: (
+              <PrivateRoute>
+                <AllEnrolledStudents></AllEnrolledStudents>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "all-assignment",
+            element: (
+              <PrivateRoute>
+                <AllAssignment></AllAssignment>
               </PrivateRoute>
             ),
           },

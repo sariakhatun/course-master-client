@@ -15,7 +15,10 @@ const CourseDetails = () => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [completedLessons, setCompletedLessons] = useState([]);
-  // Handler to mark a lesson as completed
+
+  // NEW: selected batch state
+  const [selectedBatch, setSelectedBatch] = useState("");
+
   const handleCompleteLesson = (lessonId) => {
     if (!completedLessons.includes(lessonId)) {
       setCompletedLessons([...completedLessons, lessonId]);
@@ -33,13 +36,12 @@ const CourseDetails = () => {
       try {
         const res = await axiosSecure.get(`/api/courses/${id}`);
         if (res.data.success) {
-          setCourse(res.data.data); // API should return { success: true, data: course }
+          setCourse(res.data.data);
         } else {
           Swal.fire("Error", "Course not found!", "error");
           navigate("/courses");
         }
       } catch (error) {
-        console.error(error);
         Swal.fire("Error", "Failed to fetch course!", "error");
         navigate("/courses");
       } finally {
@@ -61,35 +63,44 @@ const CourseDetails = () => {
     ? "bg-indigo-900/30 text-gray-200"
     : "bg-purple-150 text-gray-900";
 
-  const handleEnroll = async () => {
-    if (!user?.email) {
-      Swal.fire("Error", "You must be logged in to enroll!", "error");
-      return;
+ const handleEnroll = async () => {
+  if (!user?.email) {
+    Swal.fire("Error", "You must be logged in to enroll!", "error");
+    return;
+  }
+
+  if (!selectedBatch) {
+    Swal.fire("Error", "Please select a batch to enroll!", "error");
+    return;
+  }
+
+  try {
+    const payload = {
+      courseId: course._id,
+      courseTitle: course.title,
+      batchName: selectedBatch,           // send batch
+      instructorName: course.instructor.name,
+      userEmail: user.email,
+      studentName: user.displayName || "Student",
+      studentPhoto: user.photoURL || "",
+      thumbnail: course.thumbnail,
+    };
+
+    const res = await axiosSecure.post("/api/enroll", payload);
+
+    if (res.data.success) {
+      Swal.fire("Success", "Enrollment successful ✅", "success");
     }
-
-    try {
-      const payload = {
-        courseId: course._id,
-        courseTitle: course.title,
-        instructorName: course.instructor.name,
-        userEmail: user.email,
-        thumbnail: course.thumbnail,
-      };
-
-      const res = await axiosSecure.post("/api/enroll", payload);
-
-      if (res.data.success) {
-        Swal.fire("Success", "Enrollment successful ✅", "success");
-      }
-    } catch (error) {
-      if (error.response?.data?.message === "Already enrolled") {
-        Swal.fire("Info", "You are already enrolled in this course", "info");
-      } else {
-        console.error(error);
-        Swal.fire("Error", "Failed to enroll. Try again!", "error");
-      }
+  } catch (error) {
+    if (error.response?.data?.message === "Already enrolled") {
+      Swal.fire("Info", "You are already enrolled in this course", "info");
+    } else {
+      console.error(error);
+      Swal.fire("Error", "Failed to enroll. Try again!", "error");
     }
-  };
+  }
+};
+
 
   return (
     <div
@@ -98,7 +109,7 @@ const CourseDetails = () => {
       <div className="max-w-6xl mx-auto px-4">
         <SectionTitle title={course.title} />
 
-        {/* Course Thumbnail */}
+        {/* Thumbnail */}
         <div className="rounded-xl overflow-hidden shadow-xl mb-8">
           <img
             src={course.thumbnail}
@@ -107,7 +118,7 @@ const CourseDetails = () => {
           />
         </div>
 
-        {/* Course Card */}
+        {/* Main Card */}
         <div
           className={`rounded-xl ${cardBg} p-8 flex flex-col gap-8 transition-colors duration-500`}
         >
@@ -140,6 +151,7 @@ const CourseDetails = () => {
 
             {/* Course Info */}
             <div className="flex-1 flex flex-col gap-4">
+              {/* Small details */}
               <div className="grid grid-cols-2 gap-4">
                 <p>
                   <strong>Category:</strong> {course.category}
@@ -155,6 +167,7 @@ const CourseDetails = () => {
                 </p>
               </div>
 
+              {/* Schedule */}
               <div>
                 <h4 className="font-semibold text-lg mt-2">Class Schedule:</h4>
                 <ul className="list-disc ml-5 text-sm opacity-90">
@@ -164,6 +177,7 @@ const CourseDetails = () => {
                 </ul>
               </div>
 
+              {/* Syllabus */}
               <div>
                 <h4 className="font-semibold text-lg mt-2">Syllabus:</h4>
                 <ul className="ml-5 flex flex-col gap-2">
@@ -176,19 +190,6 @@ const CourseDetails = () => {
                         <strong>Week {lesson.week}:</strong> {lesson.topic} -{" "}
                         {lesson.details.join(", ")}
                       </div>
-                      {/* <button
-                        className={`px-3 py-1 rounded font-semibold text-white ${
-                          completedLessons.includes(lesson._id)
-                            ? "bg-green-500 cursor-not-allowed"
-                            : "bg-blue-500"
-                        }`}
-                        onClick={() => handleCompleteLesson(lesson._id)}
-                        disabled={completedLessons.includes(lesson._id)}
-                      >
-                        {completedLessons.includes(lesson._id)
-                          ? "Completed"
-                          : "Mark as Completed"}
-                      </button> */}
                     </li>
                   ))}
                 </ul>
@@ -201,6 +202,7 @@ const CourseDetails = () => {
                 </p>
               </div>
 
+              {/* Outline */}
               <div>
                 <h4 className="font-semibold text-lg mt-2">Course Outline:</h4>
                 <ul className="list-disc ml-5 text-sm opacity-90">
@@ -210,21 +212,35 @@ const CourseDetails = () => {
                 </ul>
               </div>
 
-              {course.batches && course.batches.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-lg mt-2">Batches:</h4>
-                  <ul className="list-disc ml-5 text-sm opacity-90">
-                    {course.batches.map((batch, i) => (
-                      <li key={i}>
-                        {batch.name} - Starts: {batch.startDate}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {/* NEW: Batch selection */}
+              {/* NEW: Batch selection */}
+{course.batches && course.batches.length > 0 && (
+  <div className="mt-4">
+    <h4 className={`font-semibold text-lg ${isDarkMode ? "text-gray-200" : "text-gray-800"}`}>
+      Select Batch:
+    </h4>
+
+    <select
+      className={`select select-bordered w-full mt-2 ${
+        isDarkMode ? "bg-indigo-900 text-white border-gray-600" : "bg-white text-gray-800"
+      }`}
+      value={selectedBatch}
+      onChange={(e) => setSelectedBatch(e.target.value)}
+    >
+      <option value="">-- Select a Batch --</option>
+      {course.batches.map((batch, i) => (
+        <option key={i} value={batch.name}>
+          {batch.name} (Starts: {batch.startDate})
+        </option>
+      ))}
+    </select>
+  </div>
+)}
+
             </div>
           </div>
 
+          {/* Buttons */}
           <div className="flex gap-4 mt-6 flex-col sm:flex-row">
             <button
               className="btn btn-error flex-1 py-3 rounded-lg font-semibold shadow-md"
@@ -232,6 +248,7 @@ const CourseDetails = () => {
             >
               Back
             </button>
+
             <button
               className={`btn flex-1 py-3 rounded-lg font-semibold shadow-md ${btnTheme}`}
               onClick={handleEnroll}

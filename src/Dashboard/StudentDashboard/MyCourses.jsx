@@ -44,8 +44,8 @@ const MyCourses = () => {
     : "bg-gradient-to-r from-purple-600 to-purple-400 hover:from-purple-700 hover:to-purple-500 text-white";
 
   return (
-    <div className={` min-h-screen py-12 transition-colors duration-500`}>
-      <div className="text-center mb-12">
+    <div className={` min-h-screen  transition-colors duration-500`}>
+      <div className="text-center -mb-12">
         <SectionTitle title={"My Courses"} />
       </div>
 

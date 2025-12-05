@@ -18,6 +18,8 @@ const SocialLogin = () => {
         name: user.displayName,
         email: user.email,
         photoURL: user.photoURL || "",
+        role: "student", // <-- add default role
+
       });
 
       Swal.fire({
